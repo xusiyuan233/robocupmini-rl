@@ -1,0 +1,37 @@
+{
+  "status": "APPROVED_MUJOCO_PHYSICAL_DEMONSTRATION",
+  "created_date": "2026-11-23",
+  "source_kind": "berkeley_published_policy_rollout",
+  "motion": {
+    "path": "data/motions/robotcupmini/retargeted/berkeley_v12_physics/candidate_motion.npz",
+    "sha256": "66bec7b8cfb09e4b604cb4537a8b9cec985e3bfb2a57a3595806dffd68d719ae"
+  },
+  "certificate": {
+    "path": "data/motions/robotcupmini/validated/berkeley_20261120/v12_full_audit/decision.json",
+    "sha256": "9c737515e7566c5d7a457957a9fd6db0a7f6e2bb42bb725bdc0bfb6ff658417b"
+  },
+  "style_quality_report": {
+    "path": "data/motions/robotcupmini/validated/berkeley_20261120/v12_style_quality.json",
+    "sha256": "cc24c50915241823b67cfc2c103db61eaacb5b37827416ff6090eb4c79594bac"
+  },
+  "control_targets": {
+    "path": "data/motions/robotcupmini/retargeted/berkeley_v12_physics/controller_commands.npz",
+    "sha256": "117e9353645a9d834dee10f3383c347b9f545c4ba7264830ea11a197b15a4fe8"
+  },
+  "reference_mean_forward_speed_m_s": 0.1274205404829157,
+  "control_hz": 50,
+  "physics_hz": 1000,
+  "nonperiodic": true,
+  "amp_learner_integrated": false,
+  "isaaclab_replay_certified": false,
+  "human_visual_review_accepted": false,
+  "human_equivalence_certified": false,
+  "notes": [
+    "Same Berkeley robot as chosen candidate, NOT the real-video policy checkpoint.",
+    "12 source leg joints adapted to 13 target joints; no synthetic arms/spine motion.",
+    "Actual native free-root target physics, no root forces or filtered saved states.",
+    "All local project checks passed; not universal gait, IsaacLab, or hardware approval.",
+    "Nonperiodic: never use the final-to-first pair.",
+    "Demo selection alone does not implement AMP or start training."
+  ]
+}

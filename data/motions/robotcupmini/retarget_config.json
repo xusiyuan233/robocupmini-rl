@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "candidate_human_motion_not_robot_validated",
+
+  "source": {
+    "file": "data/motions/robotcupmini/raw/lafan1/walk1_subject1.bvh",
+    "start_time_s": 135.5,
+    "end_time_s": 141.5,
+    "position_unit": "cm",
+    "rotation_unit": "degree",
+    "up_axis": "Y"
+  },
+
+  "target": {
+    "urdf_file": "exts/bipedal_locomotion/bipedal_locomotion/assets/usd/ROBOCUPMINI/urdf/robotcupmini.urdf",
+    "position_unit": "m",
+    "rotation_unit": "radian",
+    "up_axis": "Z",
+    "sample_dt_s": 0.02
+  },
+
+  "landmarks": {
+    "pelvis": {
+      "human_joint": "Hips",
+      "robot_link": "pelvis"
+    },
+    "left_knee": {
+      "human_joint": "LeftLeg",
+      "robot_link": "left_knee_link"
+    },
+    "right_knee": {
+      "human_joint": "RightLeg",
+      "robot_link": "right_knee_link"
+    },
+    "left_ankle": {
+      "human_joint": "LeftFoot",
+      "robot_link": "left_ankle_pitch_link"
+    },
+    "right_ankle": {
+      "human_joint": "RightFoot",
+      "robot_link": "right_ankle_pitch_link"
+    }
+  },
+
+  "foot_orientation_links": {
+    "left": "left_ankle_roll_link",
+    "right": "right_ankle_roll_link"
+  },
+
+  "joint_names": [
+    "left_hip_pitch_joint",
+    "left_hip_roll_joint",
+    "left_hip_yaw_joint",
+    "left_knee_joint",
+    "left_ankle_pitch_joint",
+    "left_ankle_roll_joint",
+    "right_hip_pitch_joint",
+    "right_hip_roll_joint",
+    "right_hip_yaw_joint",
+    "right_knee_joint",
+    "right_ankle_pitch_joint",
+    "right_ankle_roll_joint",
+    "waist_yaw_joint"
+  ],
+
+  "initial_waist_yaw_rad": 0.0,
+  "coordinate_and_foot_calibration_complete": false
+}

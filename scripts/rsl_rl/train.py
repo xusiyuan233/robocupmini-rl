@@ -6,7 +6,15 @@ import argparse
 import sys
 import os
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../rsl_rl")))
+PROJECT_ROOT = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../..")
+)
+
+sys.path.insert(0, PROJECT_ROOT)
+sys.path.insert(
+    0,
+    os.path.join(PROJECT_ROOT, "rsl_rl"),
+)
 
 from isaaclab.app import AppLauncher
 
@@ -24,6 +32,18 @@ parser.add_argument("--save_interval", type=int, default=None, help="The number 
 parser.add_argument("--task", type=str, default=None, help="Name of the task.")
 parser.add_argument("--seed", type=int, default=None, help="Seed used for the environment")
 parser.add_argument("--checkpoint_path", type=str, default=None, help="Relative path to checkpoint file.")
+parser.add_argument(
+    "--amp",
+    action="store_true",
+    help="启用RobotcupMini风格奖励训练",
+)
+
+parser.add_argument(
+    "--amp_weight",
+    type=float,
+    default=1.0,
+    help="风格奖励权重，实际每步奖励还会乘控制周期",
+)
 
 # append RSL-RL cli arguments
 cli_args.add_rsl_rl_args(parser)
@@ -123,7 +143,29 @@ def main():
     # runner: OnPolicyRunner | OnPolicyRunnerMlp = on_policy_runner_class(
     #     env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device
     # )
-    runner = OnPolicyRunner(env, agent_cfg.to_dict(), log_dir=log_dir, device=agent_cfg.device)
+    if args_cli.amp:
+        if args_cli.task != "Robocup-Style-Prep-v0":
+            raise ValueError(
+            "--amp目前只允许用于Robocup-Style-Prep-v0"
+            )
+
+        from tools.amp.runner import AmpOnPolicyRunner
+
+        runner = AmpOnPolicyRunner(
+            env,
+            agent_cfg.to_dict(),
+            log_dir=log_dir,
+            device=agent_cfg.device,
+            style_weight=args_cli.amp_weight,
+        )
+    
+    else:
+        runner = OnPolicyRunner(
+            env,
+            agent_cfg.to_dict(),
+            log_dir=log_dir,
+            device=agent_cfg.device,
+        )
 
     # write git state to logs
     # runner.add_git_repo_to_log(__file__)

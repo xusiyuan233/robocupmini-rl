@@ -1,0 +1,40 @@
+diff --git a/source/isaaclab/isaaclab/managers/reward_manager.py b/source/isaaclab/isaaclab/managers/reward_manager.py
+index 63077ea..c9d40d4 100644
+--- a/source/isaaclab/isaaclab/managers/reward_manager.py
++++ b/source/isaaclab/isaaclab/managers/reward_manager.py
+@@ -107,18 +107,17 @@ class RewardManager(ManagerBase):
+         Returns:
+             Dictionary of episodic sum of individual reward terms.
+         """
+-        # resolve environment ids
+-        if env_ids is None:
+-            env_ids = slice(None)
++        # Use a slice for tensor indexing while preserving the reset API argument.
++        env_indices: Sequence[int] | slice = slice(None) if env_ids is None else env_ids
+         # store information
+         extras = {}
+         for key in self._episode_sums.keys():
+             # store information
+             # r_1 + r_2 + ... + r_n
+-            episodic_sum_avg = torch.mean(self._episode_sums[key][env_ids])
++            episodic_sum_avg = torch.mean(self._episode_sums[key][env_indices])
+             extras["Episode_Reward/" + key] = episodic_sum_avg / self._env.max_episode_length_s
+             # reset episodic sum
+-            self._episode_sums[key][env_ids] = 0.0
++            self._episode_sums[key][env_indices] = 0.0
+         # reset all the reward terms
+         for term_cfg in self._class_term_cfgs:
+             term_cfg.func.reset(env_ids=env_ids)
+diff --git a/source/isaaclab/setup.py b/source/isaaclab/setup.py
+index b287385..b10d3a3 100644
+--- a/source/isaaclab/setup.py
++++ b/source/isaaclab/setup.py
+@@ -37,7 +37,7 @@ INSTALL_REQUIRES = [
+     # make sure this is consistent with isaac sim version
+     "pillow==11.3.0",
+     # livestream
+-    "starlette==0.49.1",
++    "starlette==0.45.3",
+     # testing
+     "pytest",
+     "pytest-mock",

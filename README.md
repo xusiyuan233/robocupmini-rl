@@ -1,346 +1,234 @@
-<!--
-  SPDX-FileCopyrightText: 2024-2026 LimX Dynamics Technology Co., Ltd.
-  SPDX-License-Identifier: Apache-2.0
--->
+# RobotcupMini：IsaacLab PPO / AMP 风格训练
 
-<p align="center">
-  <img src="doc/banner.png" alt="tron2_rl_lab: reinforcement learning for the LimX TRON2A biped" width="100%" />
-</p>
+本仓库是基于 [limxdynamics/tron2_rl_lab](https://github.com/limxdynamics/tron2_rl_lab) 的 **RobotcupMini 13 关节机器人训练项目**，保存机器人接入、站立、速度任务及 AMP 风格奖励训练的当前可迁移快照。
 
-<p align="center">
-  <a href="README.md">English</a> | <a href="README_zh-CN.md">中文</a>
-</p>
+> **范围与状态**
+> - 本次迁移只包含 IsaacLab / PPO / AMP；**不包含本项目的 MuJoCo Sim2Sim 仓库、部署程序或实机驱动**。
+> - 当前已有可运行策略，但步态、横向摆动和方向保持仍在优化，**不是实机部署验收通过版本**。
+> - 代码在 Git 仓库；训练检查点在配套 Release 中。**只下载代码不等于恢复训练成果。**
+> - 机器人资产和参考数据包含第三方来源，默认按私有研究项目保存；未确认权限前不要改成公开分发。
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-2f6feb" alt="License: Apache-2.0" /></a>
-  <img src="https://img.shields.io/badge/python-3.10-2f6feb" alt="Python 3.10" />
-  <img src="https://img.shields.io/badge/Isaac%20Sim-5.1-2f6feb" alt="Isaac Sim 5.1" />
-  <img src="https://img.shields.io/badge/Isaac%20Lab-2.3.1-2f6feb" alt="Isaac Lab 2.3.1" />
-</p>
+## 1. 项目文件导航
 
-# tron2_rl_lab
+| 位置 | 用途 |
+|---|---|
+| `exts/bipedal_locomotion/.../assets/config/robotcupmini_cfg.py` | 机器人 USD、13 关节顺序、默认角度、PD / 执行器配置 |
+| `exts/bipedal_locomotion/.../assets/usd/ROBOCUPMINI/` | 当前使用的 URDF、STL 网格及 USD 层 |
+| `exts/bipedal_locomotion/.../tasks/locomotion/robots/robotcupmini_env_cfg.py` | 站立环境 |
+| `exts/bipedal_locomotion/.../tasks/locomotion/robots/robotcupmini_velocity_env_cfg.py` | 速度任务、动作与奖励配置 |
+| `exts/bipedal_locomotion/.../tasks/locomotion/robots/robotcupmini_style_env_cfg.py` | 固定 0.13 m/s 风格任务，步宽及根高目标覆盖 |
+| `exts/bipedal_locomotion/.../tasks/locomotion/mdp/robotcupmini_rewards.py` | 自定义奖励函数与有状态奖励类 |
+| `exts/bipedal_locomotion/.../tasks/locomotion/agents/robotcupmini_ppo_cfg.py` | PPO 超参数 |
+| `exts/bipedal_locomotion/.../tasks/locomotion/robots/__init__.py` | Gym 任务名称注册 |
+| `rsl_rl/` | 本项目携带的 PPO / encoder 实现；不要随意替换成其他版本 |
+| `tools/amp/` | AMP 特征、判别器、连续帧缓存、Runner 及测试 |
+| `tools/motion/verified_style_data.py` | 校验选定示范和证书 SHA-256；AMP 必需 |
+| `data/motions/robotcupmini/style_reference_manifest.json` | 指定当前示范及其哈希绑定 |
+| `reproducibility/` | 依赖锁、IsaacLab 提交与补丁、文件校验、成果清单 |
+| `tools/repro/` | 安装、完整性检查、回放、续训辅助脚本 |
+| `docs/upstream/` | 原官方 README 和原 CI，保留来源说明 |
 
-Reinforcement learning training stack for the LimX **TRON2A** bipedal
-robot, built on top of
-[Isaac Lab](https://isaac-sim.github.io/IsaacLab/) and using PPO to
-train locomotion policies. This repository focuses on flat-terrain
-training and supports the **SF** (sole-foot), **WF** (wheel-foot), and
-**DASF_TRON2A** full-body variants. DASF_TRON2A combines the sole-foot
-lower body with two arms and a head.
+表格中的 `...` 表示 `bipedal_locomotion` 包的嵌套路径，实际完整路径可直接在 VS Code 搜索文件名。
 
-> **Scope:** flat-terrain, blind (no perception) velocity tracking.
-> Trained policies are not included; you train them here and export
-> TorchScript / ONNX for deployment.
+## 2. 运行环境基线
 
-## Highlights
+| 组件 | 记录版本 |
+|---|---|
+| 系统 | Ubuntu 22.04.5 LTS / x86_64 |
+| Python | 3.11.16 |
+| Isaac Sim | 5.1.0.0 |
+| IsaacLab 源码 | `5c2ec81cb17532d32f7922dd7fcaae40d123b71a`，`VERSION=2.3.1`，加本仓库补丁 |
+| torch / torchvision / torchaudio | `2.7.0+cu128` / `0.22.0+cu128` / `2.7.0+cu128` |
+| NumPy / tensordict | `1.26.0` / `0.8.3` |
+| 原验证 GPU | RTX 4070 Ti SUPER，16 GB；驱动 580.82.07 |
 
-- **Three morphologies, one stack.** Sole-foot, wheel-foot and the
-  full-body dual-arm DASF_TRON2A each register a training task and a
-  `-Play-v0` task.
-- **Whole-body policy for DASF_TRON2A.** 20 position actions drive both
-  legs and both arms, with arm-swing and foot–arm coordination rewards;
-  wrists and head are held by PD.
-- **Built-in velocity estimator.** An MLP encoder reads 10 steps of
-  observation history and estimates base linear velocity, trained
-  against the simulator's ground truth.
-- **Deployment-ready export.** `play.py` writes TorchScript
-  (`policy.pt`) and ONNX (`policy.onnx`, `encoder.onnx`) next to the
-  checkpoint; the results in MuJoCo, Gazebo and on the real TRON2A are
-  shown below.
+完整运行依赖记录在 `reproducibility/requirements-runtime.lock`（238 个非 editable 包）。其他已安装包的版本备查表为 `package_versions.json`；后者**不是需要全部安装的清单**。
 
-## Model lineup
+`nvidia-smi` 中的 CUDA 数字是驱动能力信息，不等于必须另装同版本 CUDA Toolkit。不要为迁移随意升级 torch、tensordict、packaging 或 IsaacLab。
 
-| | Model | Description | DoF | Formats |
-|:---:|---|---|:---:|---|
-| <img src="doc/model_sf.png" alt="SF_TRON2A" width="320" /> | **SF_TRON2A** | Biped with sole feet (ankle pitch). 10 position actions.<br>`Isaac-Limx-SF-TRON2A-Blind-Flat-v0` | 10 | USD · URDF · Xacro · MJCF |
-| <img src="doc/model_wf.png" alt="WF_TRON2A" width="320" /> | **WF_TRON2A** | Biped with wheel feet. 8 leg joints in position control, 2 wheels in velocity control.<br>`Isaac-Limx-WF-TRON2A-Blind-Flat-v0` | 10 | USD · URDF · Xacro · MJCF |
-| <img src="doc/model_dasf.png" alt="DASF_TRON2A" width="320" /> | **DASF_TRON2A** | SF lower body + two arms + head. 20 position actions; 6 wrist / head joints held by PD.<br>`Isaac-Limx-DASF-TRON2A-Blind-Flat-v0` | 26 | USD · URDF · Xacro · MJCF |
+不同 GPU / 驱动 / PhysX 执行可能产生不同的训练轨迹；本仓库旨在恢复同一代码、数据与运行设置，不承诺训练逐位一致。4096 环境是当前续训设置，不代表所有电脑都能承载。
 
-Images are rendered in MuJoCo from each variant's bundled robot model
-(`exts/bipedal_locomotion/bipedal_locomotion/assets/usd/<MODEL>/`), same
-camera and lighting for all three. Each task also has a `-Play-v0`
-variant (for example `Isaac-Limx-SF-TRON2A-Blind-Flat-Play-v0`).
+## 3. 新电脑安装
 
-The DASF_TRON2A action vector concatenates 10 lower-body and 10
-upper-body joint targets in a fixed order; real-robot deployment must
-use the same order. See also the
-[DASF_TRON2A task details](exts/bipedal_locomotion/bipedal_locomotion/tasks/locomotion/cfg/DASF_TRON2A/README.md).
+### 3.1 下载代码、创建独立环境
 
-<p align="center">
-  <img src="doc/dasf_actions_en.png" alt="DASF_TRON2A action layout" width="100%" />
-</p>
-
-## Results on the real robot and in simulation
-
-**Real TRON2A** (SF / WF / DASF_TRON2A, office scene):
-
-<p align="center">
-  <img src="doc/real_wf.GIF" alt="TRON2A WF real-hardware deployment" width="32%" />
-  <img src="doc/real_sf.GIF" alt="TRON2A SF real-hardware deployment" width="32%" />
-  <img src="doc/real_dasf.GIF" alt="DASF_TRON2A real-hardware deployment" width="32%" />
-</p>
-
-**MuJoCo** (SF / WF / DASF_TRON2A):
-
-<p align="center">
-  <img src="doc/mujoco_sf.gif" alt="MuJoCo SF" width="32%" />
-  <img src="doc/mujoco_wf.gif" alt="MuJoCo WF" width="32%" />
-  <img src="doc/mujoco_dasf.GIF" alt="MuJoCo DASF_TRON2A" width="32%" />
-</p>
-
-**Gazebo** (SF / WF):
-
-<p align="center">
-  <img src="doc/gazebo_sf.gif" alt="Gazebo SF" width="32%" />
-  <img src="doc/gazebo_wf.gif" alt="Gazebo WF" width="32%" />
-</p>
-
-## How it works
-
-<p align="center">
-  <img src="doc/pipeline_en.png" alt="Training and deployment pipeline" width="100%" />
-</p>
-
-A task ID selects an environment config and a PPO config. Isaac Lab
-steps thousands of environments in parallel (physics at 200 Hz, policy
-at 50 Hz), `rsl_rl` trains the policy, and `play.py` exports it for
-sim-to-sim checks and real-robot deployment.
-
-<p align="center">
-  <img src="doc/policy_io_en.png" alt="Policy inputs and outputs" width="100%" />
-</p>
-
-The actor sees only proprioception, the velocity command and the
-encoder's base-velocity estimate. The critic additionally receives
-privileged simulator state (true base velocity, height scan, joint
-torques, contact forces, mass), which is available only during
-training.
-
-## Quick start
-
-**Look at the robots in 30 seconds** (no Isaac Sim needed):
+先安装 Git、Miniconda/Conda 和适合 NVIDIA GPU 的驱动。私有仓库需先通过自己的 GitHub 账号授权。本仓库地址如下：
 
 ```bash
-git clone https://github.com/limxdynamics/tron2_rl_lab.git
+mkdir -p ~/robocup
+cd ~/robocup
+git clone https://github.com/xusiyuan233/robocupmini-rl.git tron2_rl_lab
 cd tron2_rl_lab
-git lfs pull   # DASF_TRON2A meshes are stored with Git LFS
-pip install mujoco
-python -m mujoco.viewer --mjcf=exts/bipedal_locomotion/bipedal_locomotion/assets/usd/DASF_TRON2A/xml/robot.xml
+conda env create -f reproducibility/environment.yml
+conda activate env_isaaclab
 ```
 
-Swap `DASF_TRON2A` for `WF_TRON2A` to view the wheel-foot model.
-
-**Train a policy** (Isaac Sim 5.1 + Isaac Lab 2.3.1 installed, see
-[Installation](#installation)):
+### 3.2 安装锁定依赖和项目
 
 ```bash
-python scripts/rsl_rl/train.py --task Isaac-Limx-SF-TRON2A-Blind-Flat-v0 --num_envs 4096 --headless
+bash tools/repro/bootstrap.sh
 ```
 
-## Installation
-
-Requirements:
-
-- **Isaac Sim 5.1** + **Isaac Lab 2.3.1**, obtained from NVIDIA (see
-  [Scope](#scope))
-- Python 3.10
-- A CUDA-capable GPU (≥ 12 GB VRAM recommended for 4096-env training)
+默认将 IsaacLab 放到 `~/robocup/IsaacLab`。如需独立位置：
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/limxdynamics/tron2_rl_lab.git tron2_rl_lab
-cd tron2_rl_lab
-
-# 2. Editable install of the extension and the vendored rsl_rl
-pip install -e exts/bipedal_locomotion
-pip install -e rsl_rl
+ISAACLAB_DIR="$HOME/robocup/IsaacLab_robotcupmini" bash tools/repro/bootstrap.sh
 ```
 
-## Training, play and resume
+脚本会固定 IsaacLab 提交、应用两处本地差异、安装锁定包，并以 editable 方式安装本地源码。发现已有 IsaacLab 提交不匹配时会停止，**不会 reset 或覆盖已有项目**。脚本不会启动训练，也不会替用户接受 NVIDIA 许可。
 
-Replace `<TASK>` with a task ID from the [Model lineup](#model-lineup).
-Task IDs are registered in
-[exts/bipedal_locomotion/bipedal_locomotion/tasks/locomotion/robots/__init__.py](exts/bipedal_locomotion/bipedal_locomotion/tasks/locomotion/robots/__init__.py).
+安装需下载较大的 Isaac Sim / PyTorch 包，并访问 GitHub、NVIDIA PyPI 和 PyTorch 下载站。首次打开仿真器可能需要确认许可、下载资产或编译着色器。若超时，保留报错排查网络，不要用无约束的包升级来碰运气。
 
-**Train:**
+> 依赖清单来自工作机的可运行环境；尚不能把源码机器上的检查当作另一台电脑已安装验证。新电脑仍需完成以下 CPU / GPU 验收。
+
+## 4. 恢复训练成果
+
+下载本仓库 Release 中的：
+
+- `robotcupmini-training-artifacts-20261123.tar.gz`
+- `robotcupmini-training-artifacts-20261123.tar.gz.sha256`
+
+放到仓库根目录，再执行：
 
 ```bash
-python scripts/rsl_rl/train.py --task <TASK> --num_envs 4096 --headless
+sha256sum -c robotcupmini-training-artifacts-20261123.tar.gz.sha256
+tar -xzf robotcupmini-training-artifacts-20261123.tar.gz
 ```
 
-Options: `--video` records videos, `--max_iterations N` overrides the
-maximum number of iterations. Logs and checkpoints go to
-`logs/rsl_rl/<experiment_name>/<timestamp>_<run_name>/`.
+解压后，已选定续训基线在：
 
-**Play and export:** use the task ID with the `-Play-v0` suffix. The
-play cfg uses fewer envs, disables domain randomization, and simplifies
-the terrain.
+```text
+artifacts/checkpoints/amp_align_v2/model_150.pt
+```
+
+该文件不是零起点：它保留策略、encoder、PPO 优化器、判别器、判别器优化器、迭代号和示范哈希。只加载本项目可信来源的 `.pt`；它不是适合随意打开的普通数据文件。
+
+成果包中的 `artifact_manifest.json` 记录每个模型原始实验名、轮数、文件校验值和用途。若包含新续训检查点，只说明已成功保存，**不自动代表回放效果已通过验收**。本仓库不打包全部历史日志、所有中间模型和视频。
+
+## 5. 先检查，再回放，再续训
+
+### 5.1 CPU 检查（不启动机器人训练）
+
+在仓库根目录、激活环境后执行：
 
 ```bash
-python scripts/rsl_rl/play.py --task <TASK-with-Play-v0> --num_envs 32
+python -m pip check
+python -m tools.repro.verify_snapshot
+python -m tools.amp.motion_loader
+python -m tools.amp.check_transition_buffer
+python -m tools.amp.check_discriminator
+python -m tools.repro.verify_snapshot \
+  --checkpoint artifacts/checkpoints/amp_align_v2/model_150.pt
 ```
 
-By default the latest checkpoint is loaded; pass
-`--checkpoint_path <path_to_model.pt>` to select a specific one. Play
-also exports the loaded policy to an `exported/` folder next to the
-checkpoint: `policy.pt` (TorchScript), `policy.onnx` and
-`encoder.onnx`. For DASF_TRON2A the exported actor includes its
-observation normalizer.
+示范应读出 `(420, 42)` 单帧特征、`(419, 84)` 连续帧对；不连接最后一帧到第一帧。判别器测试只更新临时测试判别器，不训练机器人策略，不写正式检查点。
 
-**Resume:** `--resume True` must be passed explicitly for a checkpoint
-to be loaded. Point at a `.pt` file (recommended) or look up a run by
-name:
+### 5.2 GPU 特征一致性检查
 
 ```bash
-python scripts/rsl_rl/train.py --task <TASK> --resume True --checkpoint_path <path_to_model.pt>
-python scripts/rsl_rl/train.py --task <TASK> --resume True --load_run <run_name>
+python -m tools.amp.check_isaac_features --headless --device cuda:0
 ```
 
-## Repository layout and task wiring
+这一步启动 IsaacLab 并检查在线特征与示范口径，**不是 PPO 训练**。首次启动需更久；不要在共享 GPU 上停止别人的进程。
 
-```
-.
-├── exts/bipedal_locomotion/   # Isaac Lab extension: env / asset / MDP / robot cfg,
-│                              # robot models under bipedal_locomotion/assets/usd/
-├── rsl_rl/                    # vendored rsl_rl fork (PPO + on-policy runner);
-│                              # scripts/rsl_rl/train.py prefers it over a pip install
-├── scripts/rsl_rl/            # training / play entry points (train.py / play.py / cli_args.py)
-├── doc/                       # README images and MuJoCo / Gazebo / real-robot GIFs
-└── logs/                      # training logs and model weights (not committed)
+### 5.3 回放选定基线
+
+```bash
+bash tools/repro/play_amp.sh
 ```
 
-How a task ID is wired:
+等价的直接命令：
 
-1. **Gym registration**: in `tasks/locomotion/robots/__init__.py`,
-   the environment configuration and PPO configuration are bound to
-   the task ID.
-2. **Env cfg**: SF/WF use `tasks/locomotion/robots/limx_solefoot_tron2a_env_cfg.py`
-   and `tasks/locomotion/robots/limx_wheelfoot_tron2a_env_cfg.py`
-   respectively; DASF_TRON2A is assembled by
-   `tasks/locomotion/robots/limx_dasf_tron2a_env_cfg.py`.
-3. **Asset cfg**: SF/WF use `assets/config/solefoot_tron2a_cfg.py` /
-   `assets/config/wheelfoot_tron2a_cfg.py`; DASF_TRON2A uses
-   `assets/config/dasf_tron2a_cfg.py` for its independent USD and
-   actuator parameters.
-4. **DASF_TRON2A MDP**: scene, observation, event, curriculum, and
-   reward implementations live under `tasks/locomotion/cfg/DASF_TRON2A/`.
-5. **DASF_TRON2A agent**:
-   `tasks/locomotion/agents/dasf_rsl_rl_ppo_cfg.py` selects
-   `NormalizedPPO`, a history encoder, and independent actor/critic
-   observation normalization.
+```bash
+python scripts/rsl_rl/play.py \
+  --task=Robocup-Style-Prep-Play-v0 \
+  --device=cuda:0 --num_envs=1 \
+  --checkpoint_path=artifacts/checkpoints/amp_align_v2/model_150.pt
+```
 
-## Sim-to-sim and real-robot deployment
+回放不需要 `--amp`。当前 `play.py` 同时会在检查点旁的 `exported/` 写出部署用的 `encoder.onnx`、`policy.onnx` 和 TorchScript 导出文件。导出不是继续训练，也不是 Sim2Sim 验收。
 
-| | Simulation | Real-robot deployment |
+### 5.4 从150轮继续训练：追加2000轮，4096环境，每500轮保存
+
+**只有准备正式训练时才执行：**
+
+```bash
+bash tools/repro/resume_amp.sh
+```
+
+等价命令：
+
+```bash
+python scripts/rsl_rl/train.py \
+  --task=Robocup-Style-Prep-v0 \
+  --amp --amp_weight=1.0 --resume=True \
+  --checkpoint_path=artifacts/checkpoints/amp_align_v2/model_150.pt \
+  --device=cuda:0 --num_envs=4096 \
+  --max_iterations=2000 --save_interval=500 \
+  --logger=tensorboard \
+  --run_name=amp_align_v2_from150_2000 --headless
+```
+
+- 当前 AMP Runner 的 `max_iterations=2000` 表示**追加2000轮**；最终累计2150轮。
+- 保存判断相对于本次起始轮数，得到 `model_650.pt`、`model_1150.pt`、`model_1650.pt`、`model_2150.pt`。
+- 使用新时间戳日志目录，不覆盖基线。
+- 若显存不足，可以 `NUM_ENVS=1024 bash tools/repro/resume_amp.sh`；这改变采样批量，不再是4096环境的同一训练设置。
+- 检查点会校验风格权重、控制步长和示范哈希。不要改过示范后强行续训。
+
+查看日志：
+
+```bash
+tensorboard --logdir logs/rsl_rl/robotcupmini_style_prep --host 127.0.0.1 --port 6006
+```
+
+浏览器打开 `http://127.0.0.1:6006`。日志保存在新电脑本地，不会自动上传 GitHub。
+
+## 6. 任务与控制接口
+
+| 训练任务 | 回放任务 | 内容 |
 |---|---|---|
-| MuJoCo + Python | [tron2_mujoco_sim](https://github.com/limxdynamics/tron2_mujoco_sim) | [tron2_rl_deploy_python](https://github.com/limxdynamics/tron2_rl_deploy_python) |
-| Gazebo + ROS (SF / WF) | [tron2_gazebo_ros](https://github.com/limxdynamics/tron2_gazebo_ros) | [tron2_rl_deploy_ros](https://github.com/limxdynamics/tron2_rl_deploy_ros) |
+| `Robocup-Stand-v0` | `Robocup-Stand-Play-v0` | 站立 |
+| `Robocup-Vel-v0` | `Robocup-Vel-Play-v0` | 速度指令行走 |
+| `Robocup-Style-Prep-v0` | `Robocup-Style-Prep-Play-v0` | 风格任务，只有训练时加 `--amp` 才启用 AMP |
 
-## Real-hardware operating notes (strongly recommended)
+根连杆为 `pelvis`。动作13维，显式顺序为：
 
-<p align="center">
-  <img src="doc/bringup_en.png" alt="Real-robot bring-up sequence" width="100%" />
-</p>
-
-Follow this fixed start-up and landing sequence to avoid impact
-transients when switching policies:
-
-1. **Suspend the robot** so that neither foot is loaded; check joint
-   state, e-stop, and communication.
-2. **Enter IK mode first** and confirm inverse-kinematics control is
-   stable and the pose matches what you commanded.
-3. **Slowly lower the robot to the ground**, watching for smooth
-   contact and any abnormal shaking.
-4. **Only then switch to the walk policy**, verifying at low speed
-   and small stride before ramping up.
-
-If anything abnormal happens (sudden shaking, pose divergence, hard
-impact on landing), trigger the emergency stop immediately, return
-to the suspended state, and re-check.
-
-## Contributing
-
-Local checks that match CI, and a short end-to-end smoke run, are in
-[CONTRIBUTING.md](CONTRIBUTING.md#verification-before-opening-a-pr).
-
-## Scope
-
-**Not included** — by design:
-
-- **No trained policies** (`*.pt`, `*.pth`, `*.ckpt`, `*.onnx`,
-  `*.jit`). Train them yourself.
-- **No training logs, TensorBoard events, or Weights & Biases runs.**
-  `logs/`, `wandb/`, `events.out.tfevents.*` are `.gitignore`'d and
-  CI-blocked.
-- **No Isaac Sim redistribution.** You must obtain NVIDIA Isaac Sim
-  5.1 independently and accept the NVIDIA proprietary EULA before
-  installing this stack. Nothing here grants an Isaac Sim license.
-- **No GPU / driver bundling.** This repo does not ship drivers, CUDA,
-  or PyTorch wheels.
-- **No SDK binaries, firmware, calibration values, customer
-  configuration, or vendor CAD.**
-
-## Reference
-
-- [Isaac Lab](https://github.com/isaac-sim/IsaacLab)
-- [RSL-RL](https://github.com/leggedrobotics/rsl_rl) — upstream of
-  the vendored fork under [`rsl_rl/`](rsl_rl).
-
-## License & attribution
-
-This project is distributed under the **Apache License, Version 2.0**
-(January 2004). The full text is in [`LICENSE`](LICENSE) at the root
-of the repository. SPDX identifier: `Apache-2.0`.
-
-- [`NOTICE`](NOTICE) — required attribution notice.
-- [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) — per-component
-  provenance: the Isaac Lab-derived extension, the vendored
-  `rsl_rl/` fork (BSD-3-Clause), dev-tool license texts (including
-  a GPL entry that must be classified before release), bundled
-  STL / USD assets, and doc media.
-- [`SECURITY.md`](SECURITY.md) — how to report a vulnerability or a
-  safety-adjacent RL / reward / termination issue.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md) — dev setup, vendored-fork
-  update policy, PR checklist, DCO sign-off.
-- [`CHANGELOG.md`](CHANGELOG.md) — release notes and the currently
-  outstanding **`⚠ TO CONFIRM`** items that block the first public
-  tag.
-
-Note on subtrees:
-
-- `exts/bipedal_locomotion/setup.py` declares
-  `license="Apache-2.0"`, aligned with the top-level LICENSE. The
-  per-file Isaac-Lab-derivation audit is tracked separately as
-  `⚠ TO CONFIRM` in `THIRD_PARTY_NOTICES.md` §1.
-- `rsl_rl/` is a **vendored fork** of
-  [`leggedrobotics/rsl_rl`](https://github.com/leggedrobotics/rsl_rl)
-  under **BSD-3-Clause**; upstream copyright notices are retained
-  (see `THIRD_PARTY_NOTICES.md` §2 and
-  `CONTRIBUTING.md#vendored-rsl_rl-update-policy`).
-
-For a summary of local modifications relative to upstream, see
-[`CHANGES_VS_UPSTREAM.md`](rsl_rl/CHANGES_VS_UPSTREAM.md) and
-[`licenses/dependencies/README.md`](rsl_rl/licenses/dependencies/README.md).
-
-## Cite & support
-
-If you use this training stack in academic or public work, please
-cite the repository:
-
-```
-@misc{limx_tron2_rl_lab_2026,
-  title  = {tron2_rl_lab: RL training stack for the LimX TRON2A bipedal robot},
-  author = {LimX Dynamics},
-  year   = {2026},
-  howpublished = {\url{https://github.com/limxdynamics/tron2_rl_lab}}
-}
+```text
+0  left_hip_pitch_joint      6  right_hip_pitch_joint
+1  left_hip_roll_joint       7  right_hip_roll_joint
+2  left_hip_yaw_joint        8  right_hip_yaw_joint
+3  left_knee_joint           9  right_knee_joint
+4  left_ankle_pitch_joint   10  right_ankle_pitch_joint
+5  left_ankle_roll_joint    11  right_ankle_roll_joint
+12 waist_yaw_joint
 ```
 
-- **Bug reports / feature requests:** [GitHub Issues](https://github.com/limxdynamics/tron2_rl_lab/issues).
-- **Questions / integration help:** [GitHub Discussions](https://github.com/limxdynamics/tron2_rl_lab/discussions).
-- **Security reports:** email `contact@limxdynamics.com`; see
-  [`SECURITY.md`](SECURITY.md).
-- **Hardware / real-robot safety incidents:** email
-  `contact@limxdynamics.com` with subject prefix
-  `[tron2_rl_lab hardware]`. Do not open a public issue.
-- **Company / commercial contact:** <https://www.limxdynamics.com>.
+当前动作目标为默认关节角度加 `0.15 × action`；具体限幅/处理应以环境和 Action 配置为准。IsaacLab 内部关节排列不应被默认当成策略顺序。当前控制周期0.02s（50Hz），物理步长0.005s（200Hz）。
+
+AMP 特征单帧42维（13关节角 + 13关节速度 + 3根线速度 + 3根角速度 + 3重力投影 + 6脚底相对位置 + 1根高），相邻帧84维。示范四元数为 `xyzw`，IsaacLab接口为 `wxyz`，特征桥接代码处理相应口径。
+
+## 7. 当前进展与已知局限
+
+- 完成 URDF / USD 接入、站立和速度任务、AMP 特征与判别器接入。
+- 已选择第二轮 AMP `model_150.pt` 作为风格续训折中基线；它不是所有指标最优。
+- 之前同布局60秒、4个初态测试中该版本4/4完成；仍有速度超调、横滚、偏航、直腿及脚朝向问题。这不是概率安全保证。
+- 新增训练轮数不保证步态必然改善；需回放比较中间检查点，不能默认最后一份最好。
+- 旧检查点对应的历史训练源代码并未逐次提交；当前快照不能被表述为所有旧实验的精确历史源码。
+- `tools/motion/` 中保留早期处理工具供研究追溯；除当前示范校验桥外，部分旧工具需要未打包的原始动作、MuJoCo环境或历史草稿。**它们不是当前训练的前置步骤。**详见 [参考数据说明](docs/REFERENCE_DATA.md)。
+- 原官方任务与图文保留用于来源追溯，不代表本次逐一验证。当前复现验收以本项目 `Robocup-*` 任务为准。
+- `reproducibility/verification_report.json` 记录本次实际检查范围；没有执行的检查不应被视为已通过。
+
+## 8. 常见问题
+
+- **`No module named isaaclab`**：确认环境正确，重新按安装步骤安装固定源码，不是换一个 `cd` 目录就能解决。
+- **pip依赖冲突**：核对锁文件，不直接升级 torch / tensordict；本项目使用携带的 `rsl_rl`，不要替换为 IsaacLab 可选的其他 RSL-RL 算法版本。
+- **找不到检查点**：下载配套 Release 并解压；`.gitignore` 有意排除了 `.pt/.onnx` 和日志。
+- **AMP恢复提示示范不一致**：先跑完整性检查，恢复原示范，不修改证书和哈希来绕过检查。
+- **首次窗口停留很久**：可能在编译着色器或下载资源，结合日志检查；如出现“已杀死”，需检查显存/内存，不直接归因策略。
+- **默认账号/路径不同**：示例用 `$HOME` 和仓库相对路径，不要求用户名为 `ruiz`。模型转换配置与旧报告里的原机器路径属于历史记录，不是新机器依赖。
+
+## 9. 来源与权限
+
+保留原 `LICENSE`、`NOTICE`、`THIRD_PARTY_NOTICES.md`，原说明见 `docs/upstream/`。参考示范来自 Berkeley humanoid 已发布策略轨迹的适配；来源提交与哈希见 `reproducibility/reference_source.json`，对应来源许可证副本见 `docs/licenses/`。
+
+原仓库代码许可不应被理解为自动获得机器人CAD/网格、动作源数据或训练策略的额外公开分发权限。不要上传账号令牌、私钥、环境密码，或其他使用者的代码和模型。

@@ -1,0 +1,117 @@
+{
+  "snapshot_date": "2026-11-23",
+  "scope": "Trusted local IsaacLab training checkpoints only; no Sim2Sim",
+  "expert_features_sha256": "22fabe4f09fda62d10491e0da7703dc7ba1b33fd9582e21b9780b116813a8946",
+  "files": [
+    {
+      "path": "artifacts/checkpoints/ppo_velocity_v18/model_15000.pt",
+      "sha256": "4210dc46a579f7fa09fbc4fb71777b148c2bb272fdf34284f186aa1a87861538",
+      "bytes": 5674693,
+      "original_experiment": "robotcupmini_velocity",
+      "original_run": "2026-11-09_16-30-32_forward_gait_v18_stance_yaw",
+      "iteration": 15000,
+      "contains_amp_state": false,
+      "selected_resume_baseline": false,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_walk_pilot_v1/model_50.pt",
+      "sha256": "5b29ad2f10aa888c742c64d2c801fd4e690809e8c00554be663309b1eb3a36c9",
+      "bytes": 6340449,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-04-37_amp_walk_pilot_v1",
+      "iteration": 50,
+      "contains_amp_state": true,
+      "selected_resume_baseline": false,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_walk_pilot_v1/model_100.pt",
+      "sha256": "f1bc11fbbc5eecd205d7a84e4d4d5ecce6b66e2a5008fcdb7df82cd5ee39fe39",
+      "bytes": 6340555,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-04-37_amp_walk_pilot_v1",
+      "iteration": 100,
+      "contains_amp_state": true,
+      "selected_resume_baseline": false,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_walk_pilot_v1/model_150.pt",
+      "sha256": "044c0c0195dd2eb1554c4471103e6545e58ed026d8f262212b8cdd66bfbc072f",
+      "bytes": 6340555,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-04-37_amp_walk_pilot_v1",
+      "iteration": 150,
+      "contains_amp_state": true,
+      "selected_resume_baseline": false,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_walk_pilot_v1/model_200.pt",
+      "sha256": "d49bcfcf4e7378dcfe54b6e673d1d902db237f5bcfa0af78dd5a322b7947de3f",
+      "bytes": 6340555,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-04-37_amp_walk_pilot_v1",
+      "iteration": 200,
+      "contains_amp_state": true,
+      "selected_resume_baseline": false,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_align_v2/model_50.pt",
+      "sha256": "7082f83e3c74cae21900cd56a11e5b61da3f3bf922698add1ba98cc316437204",
+      "bytes": 6340449,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-24-04_amp_align_v2",
+      "iteration": 50,
+      "contains_amp_state": true,
+      "selected_resume_baseline": false,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_align_v2/model_100.pt",
+      "sha256": "b78491b7a335ebc576352c8da848e0aafeb60287f6ef1ed0d4d7511dff8e9236",
+      "bytes": 6340555,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-24-04_amp_align_v2",
+      "iteration": 100,
+      "contains_amp_state": true,
+      "selected_resume_baseline": false,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_align_v2/model_150.pt",
+      "sha256": "61c88827714487a4d9e8d788179defb25f9b5571f502b01fe0b2420a21e2342d",
+      "bytes": 6340555,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-24-04_amp_align_v2",
+      "iteration": 150,
+      "contains_amp_state": true,
+      "selected_resume_baseline": true,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_align_v2/model_200.pt",
+      "sha256": "2e1515186aa1c80d10ddecdb4cd45d465e38bfd4cd092a26fc645f22e02e1cb7",
+      "bytes": 6340555,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-24-04_amp_align_v2",
+      "iteration": 200,
+      "contains_amp_state": true,
+      "selected_resume_baseline": false,
+      "playback_review": "see README; not hardware-certified"
+    },
+    {
+      "path": "artifacts/checkpoints/amp_align_v2_continued_unreviewed/model_650.pt",
+      "sha256": "bee0baecf15d86a21aac1aa282e9cb38fb35c11e536d9571dc11919d43ca1aca",
+      "bytes": 6340811,
+      "original_experiment": "robotcupmini_style_prep",
+      "original_run": "2026-11-23_15-55-02_amp_align_v2_from150_2000",
+      "iteration": 650,
+      "contains_amp_state": true,
+      "selected_resume_baseline": false,
+      "playback_review": "not reviewed after new continuation"
+    }
+  ]
+}

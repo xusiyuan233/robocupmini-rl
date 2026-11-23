@@ -1,0 +1,72 @@
+{
+  "status": "STRAIGHT_STYLE_TARGETS_MET",
+  "source_kind": "berkeley_published_policy_rollout",
+  "criteria_version": "20261120_robot_source_v1",
+  "thresholds": {
+    "minimum_duration_s": 8.0,
+    "maximum_lateral_sway_m": 0.055,
+    "maximum_lateral_drift_m_s": 0.003,
+    "minimum_width_p05_m": 0.125,
+    "minimum_width_median_m": 0.15,
+    "maximum_width_median_m": 0.19,
+    "maximum_width_p95_m": 0.215,
+    "maximum_torso_highfreq_deg": 0.2,
+    "maximum_torso_rate_deg_s": 65.0,
+    "maximum_torso_accel_p95_deg_s2": 400.0,
+    "maximum_swing_side_excursion_p95_m": 0.025,
+    "maximum_heading_range_deg": 10.0,
+    "minimum_forward_speed_m_s": 0.12,
+    "maximum_forward_speed_m_s": 0.3,
+    "maximum_source_torso_deviation_rmse_deg": 5.0
+  },
+  "measured": {
+    "duration_s": 8.380000000000795,
+    "detrended_pelvis_sway_range_m": 0.05287505928895157,
+    "lateral_drift_m_s": 9.165354558752259e-05,
+    "width_p05_median_p95_m": [
+      0.14365407251381013,
+      0.15060958166079286,
+      0.15970917320258335
+    ],
+    "torso": {
+      "highfreq_rms_deg": 0.12891746670940857,
+      "peak_rate_deg_s": 20.17783072291963,
+      "acceleration_p95_deg_s2": 344.0842538255624,
+      "rpy_range_deg": [
+        6.722046945664202,
+        5.26847543133202,
+        3.567229516601402
+      ]
+    },
+    "swing_side_excursion_p95_m": 0.009244655828314624,
+    "mean_forward_speed_m_s": 0.1274205404829157,
+    "heading_range_deg": 3.539006083305954,
+    "source_torso_rmse_deg": 2.117596813734532,
+    "same_foot_period_median_s": 0.9900000000002684,
+    "knee_median_deg": [
+      44.8251737700397,
+      44.98280504621269
+    ]
+  },
+  "checks": {
+    "physics": true,
+    "full_duration": true,
+    "lateral_sway": true,
+    "lateral_drift": true,
+    "foot_width": true,
+    "torso_jitter": true,
+    "torso_rate": true,
+    "torso_acceleration": true,
+    "no_sideways_swing": true,
+    "heading": true,
+    "speed": true,
+    "source_torso": true
+  },
+  "failed_checks": [],
+  "physics_passed": true,
+  "physics_certificate_sha256": "9c737515e7566c5d7a457957a9fd6db0a7f6e2bb42bb725bdc0bfb6ff658417b",
+  "human_equivalence_certified": false,
+  "isaaclab_physical_replay_certified": false,
+  "amp_learner_integrated": false,
+  "user_visual_acceptance": false
+}

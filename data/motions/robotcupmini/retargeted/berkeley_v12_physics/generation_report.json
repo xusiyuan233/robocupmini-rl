@@ -1,0 +1,309 @@
+{
+  "status": "MUJOCO_PHYSICAL_DEMONSTRATION_PASSED",
+  "dynamics_certified_in_this_mujoco_contract": true,
+  "amp_learner_integrated": false,
+  "isaaclab_physical_replay_verified": false,
+  "sim2real_safe": false,
+  "reference_motion": "/home/ruiz/robocup/tron2_rl_lab/data/motions/robotcupmini/retargeted/berkeley_v6_ik/candidate_motion.npz",
+  "reference_sha256": "b2defe49b9e468e749edbd758ae8a674954efb0a48cb22d616fa6bb45f79492d",
+  "optimizer_rollout_sha256": "bbb53ecdf64a7efbe643ab28e83bfb69c8b66abd1aa79d65459a977456ee982b",
+  "model_sha256": "6cb8c2ec1f0819855f2f861855257caf985c061d2075a8add3aca9748cc356cd",
+  "physics_contract": {
+    "input_reference": "/home/ruiz/robocup/tron2_rl_lab/data/motions/robotcupmini/retargeted/berkeley_v6_ik/candidate_motion.npz",
+    "input_reference_sha256": "b2defe49b9e468e749edbd758ae8a674954efb0a48cb22d616fa6bb45f79492d",
+    "mjcf_sha256": "6cb8c2ec1f0819855f2f861855257caf985c061d2075a8add3aca9748cc356cd",
+    "contact_time_constant_s": 0.006,
+    "joint_limit_time_constant_s": 0.004,
+    "method": "Sampling MPC, actual physical states, no learning or forces",
+    "parameters": {
+      "motion": "data/motions/robotcupmini/retargeted/berkeley_v6_ik/candidate_motion.npz",
+      "warm": "data/motions/robotcupmini/retargeted/berkeley_v6_ik/v12_warm.npz",
+      "neutral_waist_target": true,
+      "fixed_prefix_steps": 1,
+      "prefix_warm": null,
+      "output": "data/motions/robotcupmini/validated/berkeley_20261120/teacher_v12",
+      "duration": 8.4,
+      "contact": 0.006,
+      "joint_stop": 0.004,
+      "samples": 192,
+      "iterations": 5,
+      "horizon": 45,
+      "replan": 4,
+      "sigma": 0.012,
+      "joint_limit_weight": 100000.0,
+      "joint_limit_margin": 0.01,
+      "contact_slip_weight": 1000000.0,
+      "contact_speed_threshold": 0.004,
+      "penetration_safety_weight": 1000000000000.0,
+      "joint_speed_safety_weight": 1000000000.0,
+      "joint_speed_safety_limit": 4.7,
+      "support_slip_safety_weight": 1000000000.0,
+      "support_slip_safety_limit": 0.035,
+      "swing_safety_weight": 1000000000000.0,
+      "swing_safety_clearance": 0.006,
+      "swing_clearance_weight": 2000000.0,
+      "swing_clearance_target": 0.022,
+      "root_forward_weight": 10000000.0,
+      "root_forward_velocity_weight": 500000.0,
+      "foot_forward_weight": 1000000.0,
+      "root_lateral_weight": 5000000.0,
+      "root_lateral_velocity_weight": 250000.0,
+      "lateral_corridor_weight": 100000000000.0,
+      "lateral_corridor_error": 0.002,
+      "foot_lateral_safety_weight": 10000000000.0,
+      "foot_lateral_safety_error": 0.008,
+      "foot_width_safety_weight": 10000000000.0,
+      "heading_safety_weight": 1000000000.0,
+      "heading_safety_deg": 2.5,
+      "root_angular_smoothness_weight": 20.0,
+      "torso_highfreq_weight": 1250000000.0,
+      "torso_rate_weight": 150000.0,
+      "torso_accel_weight": 3500.0,
+      "torso_pose_weight": 10000000.0,
+      "waist_pose_weight": 1000000.0,
+      "foot_width_weight": 1000000.0,
+      "foot_lateral_track_weight": 500000.0,
+      "swing_lateral_velocity_weight": 800.0,
+      "minimum_foot_width": 0.155,
+      "maximum_foot_width": 0.19,
+      "control_rate_weight": 750000.0,
+      "control_curvature_weight": 1000000.0,
+      "cubic_noise": true,
+      "threads": 4
+    },
+    "status": "OPTIMIZATION_FINISHED_REQUIRES_INDEPENDENT_AUDIT",
+    "optimizer_source_sha256": "941fa5ad1aa877c9d589ddb91351f44eb017e997d12fcbb708bee30c2ddc7e11",
+    "torso_smoothing_helper_sha256": "876f089eea5b6340a6e5e0b3ba423014220ccf4fa9b1168e2e62edd3d76623be",
+    "body_kinematics_helper_sha256": "50c6612e80182f8c2c375631ab8e89df22875688778b00c7a9c960951953766c",
+    "warm_start_sha256": "83823bee2f8807c9e90948d8404a25679c4098db824373df6dcc267142add602",
+    "prefix_warm_sha256": null
+  },
+  "tested_model": {
+    "joint_names": [
+      "left_hip_pitch_joint",
+      "left_hip_roll_joint",
+      "left_hip_yaw_joint",
+      "left_knee_joint",
+      "left_ankle_pitch_joint",
+      "left_ankle_roll_joint",
+      "right_hip_pitch_joint",
+      "right_hip_roll_joint",
+      "right_hip_yaw_joint",
+      "right_knee_joint",
+      "right_ankle_pitch_joint",
+      "right_ankle_roll_joint",
+      "waist_yaw_joint"
+    ],
+    "mass_kg": 32.656550700000004,
+    "kp": [
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      30.0,
+      30.0,
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      30.0,
+      30.0,
+      40.0
+    ],
+    "kd": [
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      1.5,
+      1.5,
+      3.0,
+      3.0,
+      3.0,
+      3.0,
+      1.5,
+      1.5,
+      2.0
+    ],
+    "effort_limits_Nm": [
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      36.0,
+      36.0,
+      60.0,
+      60.0,
+      60.0,
+      60.0,
+      36.0,
+      36.0,
+      60.0
+    ],
+    "hard_joint_limits_rad": [
+      [
+        -2.51327,
+        2.87979
+      ],
+      [
+        -0.523599,
+        2.96706
+      ],
+      [
+        -1.57,
+        1.57
+      ],
+      [
+        -1.57,
+        1.57
+      ],
+      [
+        -0.872665,
+        0.523599
+      ],
+      [
+        -0.261799,
+        0.261799
+      ],
+      [
+        -2.51327,
+        2.87979
+      ],
+      [
+        -2.96706,
+        0.523599
+      ],
+      [
+        -1.57,
+        1.57
+      ],
+      [
+        -1.57,
+        1.57
+      ],
+      [
+        -0.872665,
+        0.523599
+      ],
+      [
+        -0.261799,
+        0.261799
+      ],
+      [
+        -2.61799,
+        2.61799
+      ]
+    ],
+    "joint_armature": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "physics_dt_s": 0.001,
+    "control_dt_s": 0.02,
+    "gravity": [
+      0.0,
+      0.0,
+      -9.81
+    ],
+    "ground_friction": [
+      0.8,
+      0.005,
+      0.0001
+    ],
+    "self_collisions": false,
+    "root_is_free": true
+  },
+  "criteria_version": "20261119_v2_allstep_geometry",
+  "thresholds": {
+    "joint_speed_limit_rad_s": 5.0,
+    "joint_speed_numerical_tolerance_rad_s": 0.001,
+    "maximum_effort_ratio": 1.000001,
+    "hard_joint_limit_tolerance_rad": 0.005,
+    "maximum_root_tilt_deg": 25.0,
+    "minimum_root_height_m": 0.4,
+    "maximum_mesh_penetration_m": 0.002,
+    "minimum_swing_clearance_m": 0.003,
+    "minimum_mean_forward_speed_m_s": 0.08,
+    "minimum_duration_s": 8.0,
+    "maximum_support_contact_slip_m_s": 0.05,
+    "support_contact_slip_p95_m_s": 0.02,
+    "minimum_contact_phase_agreement": 0.9,
+    "minimum_lateral_foot_separation_m": 0.03,
+    "maximum_replay_state_error": 1e-05
+  },
+  "measured": {
+    "duration_s": 8.38,
+    "full_clip_duration_s": 8.38,
+    "physics_steps": 8380,
+    "peak_actual_joint_speed_rad_s": 3.8844718949064636,
+    "peak_actual_effort_ratio": 1.0,
+    "maximum_hard_joint_limit_error_rad": 0.0,
+    "maximum_root_tilt_deg": 5.720503296402483,
+    "minimum_root_height_m": 0.5159682625088553,
+    "maximum_mesh_penetration_m": 0.0016638026943357684,
+    "minimum_interior_swing_clearance_m": 0.007895555128233867,
+    "mean_forward_speed_m_s": 0.12742054048292778,
+    "support_contact_point_slip_max_m_s": 0.027415760222388477,
+    "support_contact_point_slip_p95_m_s": 0.0094395402196498,
+    "contact_phase_agreement": 1.0,
+    "minimum_lateral_foot_separation_m": 0.14080496078973223,
+    "maximum_replay_state_error": 0.0,
+    "maximum_external_force": 0.0,
+    "unexpected_nonfoot_ground_contacts": 0,
+    "new_mujoco_warning_counts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "checks": {
+    "full_clip": true,
+    "actual_speed": true,
+    "actual_effort": true,
+    "joint_positions": true,
+    "no_fall": true,
+    "penetration": true,
+    "swing_clearance": true,
+    "forward_progress": true,
+    "support_contact_slip": true,
+    "contact_phase": true,
+    "no_crossed_feet": true,
+    "independent_replay": true,
+    "no_external_forces": true,
+    "no_nonfoot_ground_contacts": true,
+    "no_numerical_warnings": true
+  },
+  "failed_checks": [],
+  "anchor_geometry_diagnostic_not_contact_slip_gate": {
+    "transition_guard_frames": 5,
+    "minimum_swing_clearance_threshold_m": 0.003,
+    "swing_interior_samples": 215,
+    "swing_scrape_samples": 0,
+    "moving_swing_ground_samples": 0,
+    "swing_scrape_fraction": 0.0,
+    "minimum_interior_swing_mesh_z_m": 0.007782906211163308,
+    "stance_interior_samples": 271,
+    "stance_sliding_samples": 4,
+    "maximum_stance_horizontal_speed_m_s": 0.012426652019407394,
+    "mesh_below_ground_2mm_samples": 0,
+    "passed": false,
+    "note": "Necessary geometry/contact consistency only; not a dynamics or AMP certificate."
+  },
+  "qualification_scope": "One nonperiodic source-derived clip under stated MuJoCo contract; not a trained policy or robustness/Isaac/real certificate.",
+  "source_kind": "berkeley_published_policy_rollout"
+}

@@ -98,3 +98,102 @@ gym.register(
         ),
     },
 )
+# Robotcupmini standing tasks
+gym.register(
+    id="Robocup-Stand-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.robots."
+            "robotcupmini_env_cfg:RobotcupMiniStandEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.agents."
+            "robotcupmini_ppo_cfg:RobotcupMiniStandPPORunnerCfg"
+        ),
+    },
+)
+
+gym.register(
+    id="Robocup-Stand-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.robots."
+            "robotcupmini_env_cfg:RobotcupMiniStandEnvCfg_PLAY"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.agents."
+            "robotcupmini_ppo_cfg:RobotcupMiniStandPPORunnerCfg"
+        ),
+    },
+)
+gym.register(
+    id="Robocup-Vel-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.robots."
+            "robotcupmini_velocity_env_cfg:RobotcupMiniVelocityEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.agents."
+            "robotcupmini_ppo_cfg:RobotcupMiniVelocityPPORunnerCfg"
+        ),
+    },
+)
+
+gym.register(
+    id="Robocup-Vel-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.robots."
+            "robotcupmini_velocity_env_cfg:RobotcupMiniVelocityEnvCfg_PLAY"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.agents."
+            "robotcupmini_ppo_cfg:RobotcupMiniVelocityPPORunnerCfg"
+        ),
+    },
+)
+
+
+
+# RobotcupMini 风格学习准备任务。
+# 当前尚未加入 AMP 判别器和风格奖励。
+gym.register(
+    id="Robocup-Style-Prep-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.robots."
+            "robotcupmini_style_env_cfg:RobotcupMiniStylePrepEnvCfg"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.agents."
+            "robotcupmini_ppo_cfg:RobotcupMiniStylePrepPPORunnerCfg"
+        ),
+    },
+)
+
+gym.register(
+    id="Robocup-Style-Prep-Play-v0",
+    entry_point="isaaclab.envs:ManagerBasedRLEnv",
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.robots."
+            "robotcupmini_style_env_cfg:RobotcupMiniStylePrepEnvCfg_PLAY"
+        ),
+        "rsl_rl_cfg_entry_point": (
+            "bipedal_locomotion.tasks.locomotion.agents."
+            "robotcupmini_ppo_cfg:RobotcupMiniStylePrepPPORunnerCfg"
+        ),
+    },
+)

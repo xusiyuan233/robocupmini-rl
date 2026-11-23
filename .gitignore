@@ -72,3 +72,30 @@ htmlcov/
 
 # Internal
 /DASF_TRON2A_STAGE1_CHANGES.md
+
+# RobotcupMini migration: curated training snapshot only
+/backups/
+/artifacts/
+/reproducibility/local/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/data/motions/robotcupmini/raw/
+/data/motions/robotcupmini/retargeted/*
+!/data/motions/robotcupmini/retargeted/berkeley_v12_physics/
+/data/motions/robotcupmini/retargeted/berkeley_v12_physics/*
+!/data/motions/robotcupmini/retargeted/berkeley_v12_physics/candidate_motion.npz
+!/data/motions/robotcupmini/retargeted/berkeley_v12_physics/controller_commands.npz
+!/data/motions/robotcupmini/retargeted/berkeley_v12_physics/generation_report.json
+/data/motions/robotcupmini/validated/*
+!/data/motions/robotcupmini/validated/berkeley_20261120/
+/data/motions/robotcupmini/validated/berkeley_20261120/*
+!/data/motions/robotcupmini/validated/berkeley_20261120/v12_full_audit/
+!/data/motions/robotcupmini/validated/berkeley_20261120/v12_style_quality.json
+/exts/bipedal_locomotion/bipedal_locomotion/assets/usd/ROBOCUPMINI/mjcf/
+/exts/bipedal_locomotion/bipedal_locomotion/assets/usd/ROBOCUPMINI/usd/.asset_hash
+/exts/bipedal_locomotion/bipedal_locomotion/assets/usd/ROBOCUPMINI/usd/config.yaml
+/exts/bipedal_locomotion/bipedal_locomotion/assets/usd/ROBOCUPMINI/usd/configuration/e1mini_*.usd
+/exts/bipedal_locomotion/bipedal_locomotion/assets/usd/ROBOCUPMINI/urdf/*.json

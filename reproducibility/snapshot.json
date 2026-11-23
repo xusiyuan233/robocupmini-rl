@@ -1,0 +1,34 @@
+{
+  "snapshot_date": "2026-11-23",
+  "scope": "IsaacLab + RobotcupMini + PPO/AMP training; Sim2Sim excluded",
+  "os": "Ubuntu 22.04.5 LTS",
+  "architecture": "x86_64",
+  "python": "3.11.16",
+  "isaaclab": {
+    "repository": "https://github.com/isaac-sim/IsaacLab.git",
+    "commit": "5c2ec81cb17532d32f7922dd7fcaae40d123b71a",
+    "version_file": "2.3.1",
+    "local_patch": "reproducibility/patches/isaaclab-local.patch"
+  },
+  "training_upstream": {
+    "repository": "https://github.com/limxdynamics/tron2_rl_lab.git",
+    "base_commit": "f4b7ce641327602862065fd3bd64d1796ab7b823"
+  },
+  "gpu_reference": {
+    "name": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "memory_MiB": 16376,
+    "driver": "580.82.07"
+  },
+  "amp_resume_baseline": {
+    "original_run": "2026-11-23_15-24-04_amp_align_v2",
+    "iteration": 150,
+    "restore_path": "artifacts/checkpoints/amp_align_v2/model_150.pt",
+    "style_weight": 1.0,
+    "step_dt_s": 0.02
+  },
+  "notes": [
+    "Different hardware/drivers may yield nondeterministic training results.",
+    "Current source snapshot is not a historical source reconstruction for all earlier checkpoints.",
+    "No other user project, secrets, Conda environment directory, or Sim2Sim repository included."
+  ]
+}

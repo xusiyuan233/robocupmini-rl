@@ -1,0 +1,58 @@
+[
+  {
+    "repository": "google-deepmind/mujoco_playground",
+    "commit": "81dfe512c9f2f03107fda1e31de585d04bb30bc4",
+    "path": "mujoco_playground/experimental/sim2sim/play_bh_joystick.py",
+    "git_blob_sha1": "31b9a3d33bda6088309aa21639d2cc15aa36c618",
+    "sha256": "544c121ef382971784ee33d4cc67a0f00564a60fd88e84721bb84993e3ed386b"
+  },
+  {
+    "repository": "google-deepmind/mujoco_playground",
+    "commit": "81dfe512c9f2f03107fda1e31de585d04bb30bc4",
+    "path": "mujoco_playground/experimental/sim2sim/onnx/bh_policy.onnx",
+    "git_blob_sha1": "8b196cfafcfd872536b425b4f71e732f20dac70e",
+    "sha256": "ab83d4a2853c581a0d761e45e61b586f529f9bc1504d190037369f47e4e69892"
+  },
+  {
+    "repository": "google-deepmind/mujoco_playground",
+    "commit": "81dfe512c9f2f03107fda1e31de585d04bb30bc4",
+    "path": "mujoco_playground/_src/locomotion/berkeley_humanoid/xmls/berkeley_humanoid_mjx_feetonly.xml",
+    "git_blob_sha1": "c415ca536c103d8b3ef2eceb531e3ae02cf6fbe1",
+    "sha256": "e0b1b124f7f7adea00669a4bb0d707f04eff011af1be63c34d72e2372693cc04"
+  },
+  {
+    "repository": "google-deepmind/mujoco_playground",
+    "commit": "81dfe512c9f2f03107fda1e31de585d04bb30bc4",
+    "path": "mujoco_playground/_src/locomotion/berkeley_humanoid/xmls/scene_mjx_feetonly_flat_terrain.xml",
+    "git_blob_sha1": "8caed9c64114f1080f59aaf55693125c4415b4da",
+    "sha256": "de931c182370542bdc559e4e8699ccdda7d3a92d4cbf9ffd27db2f2d2daf65f9"
+  },
+  {
+    "repository": "google-deepmind/mujoco_playground",
+    "commit": "81dfe512c9f2f03107fda1e31de585d04bb30bc4",
+    "path": "mujoco_playground/_src/locomotion/berkeley_humanoid/joystick.py",
+    "git_blob_sha1": "b43c00dcc47af350c165bf75c856a7176ff30fd0",
+    "sha256": "246dac8b685f2076e7fd966df44ca2cb48f4345250aa745eb81ee43b5725cf5b"
+  },
+  {
+    "repository": "google-deepmind/mujoco_playground",
+    "commit": "81dfe512c9f2f03107fda1e31de585d04bb30bc4",
+    "path": "mujoco_playground/_src/locomotion/berkeley_humanoid/base.py",
+    "git_blob_sha1": "ea8680d8c3ee256caa8cb43f46ef8f3b4aa51def",
+    "sha256": "d3732b0146e191951027ab9b19f192acca7f1be2ee195ee7c1ceadf7f5c92b3c"
+  },
+  {
+    "repository": "google-deepmind/mujoco_playground",
+    "commit": "81dfe512c9f2f03107fda1e31de585d04bb30bc4",
+    "path": "mujoco_playground/_src/locomotion/berkeley_humanoid/berkeley_humanoid_constants.py",
+    "git_blob_sha1": "fa49c9c431d35d385ff7db6af760a30b68669145",
+    "sha256": "61464ba0b34fe594e8eacd8c807d460bb5a7403017bea645305a63d74144b90c"
+  },
+  {
+    "repository": "google-deepmind/mujoco_playground",
+    "commit": "81dfe512c9f2f03107fda1e31de585d04bb30bc4",
+    "path": "LICENSE",
+    "git_blob_sha1": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  }
+]

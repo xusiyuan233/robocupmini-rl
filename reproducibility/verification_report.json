@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-23",
+  "scope": "Migration preparation; CPU-only checks; no new robot policy training started",
+  "checks": {
+    "pip_check": "passed: no broken requirements",
+    "locked_dependency_dry_run_on_original_machine": "passed: all 238 pinned non-editable requirements already satisfied; NOT a clean-machine installation test",
+    "snapshot_sha256_and_python_ast": "passed",
+    "urdf_movable_joint_count": 13,
+    "urdf_relative_mesh_files": "passed",
+    "selected_demonstration_hash_bindings": "passed",
+    "amp_feature_shapes": [
+      [
+        420,
+        42
+      ],
+      [
+        419,
+        84
+      ]
+    ],
+    "transition_buffer_cpu_test": "passed",
+    "discriminator_cpu_test": "passed: temporary discriminator only; not policy training",
+    "release_checkpoints": "10 complete copies loaded on CPU; iterations and AMP bindings checked",
+    "selected_amp_model150_resume_state": "passed: policy/encoder/discriminator and optimizer states present, expert hash and dt matched",
+    "shell_syntax": "passed",
+    "usd_dependency_scan": {
+      "layers": 5,
+      "missing_robot_layers": 0,
+      "unresolved_builtin_shader": "OmniPBR.mdl (provided by Isaac Sim; standalone USD scanner has no MDL resolver)"
+    },
+    "clean_checkout_cpu_tests": "passed: staged files exported to separate directory; Release extracted; integrity, trusted AMP150 checkpoint, expert features, transition buffer and discriminator tests passed using existing working-machine Python environment",
+    "new_computer_full_install": "not executed",
+    "gpu_simulator_replay_during_migration": "not executed; existing 4096-environment training not interrupted",
+    "sim2sim_or_real_robot": "out of scope",
+    "tamper_detection": "passed in temporary checkout; test mutation restored",
+    "github_scope_scan": "passed: 393 tracked files; no model/credential/cache/log files; no separate Sim2Sim project; no file >=100MiB; no common token/private-key patterns"
+  },
+  "limitations": [
+    "Existing source machine packages are not proof of a fresh install.",
+    "Some historical motion-generation tools require excluded inputs/environments.",
+    "Current checkpoint gait is not a hardware safety acceptance."
+  ]
+}

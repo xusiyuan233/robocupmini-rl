@@ -143,6 +143,9 @@ def main():
     commands = obs_dict.get("commands") 
  
     # simulate environment
+    
+    debug_steps = 0
+    debug_resets = 0
     while simulation_app.is_running():
         # run everything in inference mode
         with torch.inference_mode():
@@ -150,7 +153,33 @@ def main():
             est = encoder(obs_history)
             actions = policy(torch.cat((est, obs, commands), dim=-1).detach())
             # env stepping
-            obs_dict, _, _, infos = env.step(actions)
+            obs_dict, _, dones, infos = env.step(actions)
+
+            debug_steps += 1
+            debug_resets += int(dones.sum().item())
+
+            if debug_steps % 50 == 0:
+                robot = env.unwrapped.scene["robot"]
+                command_term = env.unwrapped.command_manager.get_term(
+                    "base_velocity"
+                )
+
+                command = command_term.command[0].detach().cpu().tolist()
+                actual_velocity = (
+                    robot.data.root_lin_vel_b[0].detach().cpu().tolist()
+                )
+
+                print(
+                    f"[DEBUG] step={debug_steps} "
+                    f"command={command} "
+                    f"actual_velocity={actual_velocity} "
+                    f"standing={bool(command_term.is_standing_env[0].item())} "
+                    f"action_abs_mean={actions[0].abs().mean().item():.4f} "
+                    f"joint_speed_abs_mean="
+                    f"{robot.data.joint_vel[0].abs().mean().item():.4f} "
+                    f"resets={debug_resets}",
+                    flush=True,
+                )
             obs = obs_dict["policy"]
             obs_history = obs_dict.get("obsHistory")
             obs_history = obs_history.flatten(start_dim=1)
