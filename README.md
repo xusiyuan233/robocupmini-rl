@@ -217,6 +217,7 @@ AMP 特征单帧42维（13关节角 + 13关节速度 + 3根线速度 + 3根角�
 - `tools/motion/` 中保留早期处理工具供研究追溯；除当前示范校验桥外，部分旧工具需要未打包的原始动作、MuJoCo环境或历史草稿。**它们不是当前训练的前置步骤。**详见 [参考数据说明](docs/REFERENCE_DATA.md)。
 - 原官方任务与图文保留用于来源追溯，不代表本次逐一验证。当前复现验收以本项目 `Robocup-*` 任务为准。
 - `reproducibility/verification_report.json` 记录本次实际检查范围；没有执行的检查不应被视为已通过。
+- 本次未启用 GitHub Actions，不额外申请账号的 `workflow` 权限；自动CPU检查示例保留在 `docs/snapshot_ci.example.yml`，本地检查命令照常可用。
 
 ## 8. 常见问题
 
